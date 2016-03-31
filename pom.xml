@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.pactera.jeesite</groupId>
+	<artifactId>aggregator</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>aggregator</name>
+	<url>http://kyfxbl.iteye.com/blog/1680045</url>
+	<description>aggregator是父工程，同时承担聚合模块和父模块的作用，没有实际代码和资源文件 </description>
+
+	<!-- 定义公共变量 -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<argLine>-Dfile.encoding=UTF-8</argLine>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+
+		<!-- 对一些插件进行了公共的配置，这里主要是为了消除构建时的告警  -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5.1</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+
+				<!-- source插件 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencyManagement>
+		<!-- 解决开发人员从svn上check out工程以后，有的人会报错，找不到tools.jar -->
+		<dependencies>
+			<dependency>
+				<groupId>com.sun</groupId>
+				<artifactId>tools</artifactId>
+				<version>1.6.0</version>
+				<scope>system</scope>
+				<systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
+
+	<!-- modules 待聚合模块,相对路径 -->
+	<modules>
+		<!-- 多模块的单一maven project中，反应堆（Reactor），自动计算合理的模块构建顺序。
+			*）通过cargo聚合多个maven project时，此reactor无法裁剪相对路径的多个maven project module。（目前只能通过手动裁剪）
+			1）build时，自动先构建依赖的依赖，如jeesite-common
+			2）有向非循环图（Directed Acyclic Graph，DAG），如A依赖B，B又依赖A，mvn会crash
+			3）裁剪某单一maven project的modules反应堆
+				3-1）-am，also make，同时构建所列模块的依赖模块
+				3-2）-amd，also make dependents，同时构建依赖于所列模块的模块。如，构建所有依赖common的模块：
+						$mvn clean install -Pdev_pdt -pl jeesite-web, jeesite-common, jeesite-web-dist -amd
+				3-3）-pl，projects list，构建指定的模块，半角逗号分割。如，只构建gen代码生成器模块
+						$mvn clean install -Pdev_pdt -pl jeesite-web, jeesite-gen, jeesite-web-dist -am
+				3-4）-rf，resume from，从指定的模块回复反应堆
+						$mvn clean install -Pdev_pdt -pl jeesite-web, jeesite-gen, jeesite-web-dist -am
+				 -->
+
+		<!-- 手动裁剪 start
+			配置本聚合器的Reactor Build Order反应堆时，无需build已发行的jeesite-*框架工程，
+			如需debug框架源码进行功能贡献、故常排查，可手动裁剪添加进来，build相关框架工程；
+			框架各类artifact从 1.2.8-snapshot开始，已deployment在maven nexus私服，进行持续迭代升级；
+			各项目需要各类服务时jeesite-web-dist/pom中打开框架相关的dependencies，关注release信息控制好发行版本即可。
+			各项目组通过实际项目实施过程，提炼框架部分的公共需求，贡献review、autotest、UT、IT、SIT过的available sources。
+			各项目的典型模块工程工具等，尽量规划提炼抽取，deploy稳定版本到nexus私服上来。
+
+					-->
+		<module>../jeesite-common</module>
+		<module>../jeesite-soa</module>
+		<module>../jeesite-gen</module>
+
+		<module>../jeesite-cms</module>
+		<module>../jeesite-oa-core</module>
+		<module>../jeesite-oa</module>
+		
+		<module>../pactera-crm</module>
+		<module>../pactera-sms</module>
+	
+		
+		<module>../jeesite-web</module>
+
+		
+		<module>../jeesite-web-dist</module>
+		
+	</modules>
+	
+	<!-- 开发者信息 -->
+	<developers>
+		<developer>
+			<id>jeffen</id>
+			<name>Jeffen Cheung</name>
+			<email>jeffencheung@gmail.com</email>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
+	
+	<organization>
+		<name>pactera</name>
+		<url>http://pactera.com</url>
+	</organization>
+	
+	<!-- 配置部署的企业仓库
+		[out of office]219.143.215.116:8083
+		[in-house]192.168.5.5:8083
+	 -->
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Nexus Rlease Repository</name>
+			<url>http://192.168.5.5:8083/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Nexus Snapshots Repository</name>
+			<url>http://192.168.5.5:8083/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
