@@ -1,4 +1,8 @@
-# Pactera JeeSite 企业信息化快速开发平台 V1.2.10
+# Pactera JeeSite 企业信息化快速开发平台 V1.2.11-SNAPSHOT
+----------
+## 演示
+- [Out Of Office (OOO) Internet][1]
+- [Inhouse (Haya Peking) Intronet][2]
 
 ## 聚合器
 aggregator是父工程，同时承担聚合模块和父模块的作用，没有实际代码和资源文件 
@@ -26,5 +30,8 @@ jeesite RESTful风格webservice demo
 9.	[必须] [jeesite-web-dist](https://github.com/JeffenCheung/jeesite-web-dist)：【war】
 这个工程是放在最后的最外围的web工程，起到聚合的作用，
 即把所有的web项目，打成最终的war包。同时，在这个工程里，放置或替换公共的配置文件，比如*.xml、*.properties等。
-新项目根据规范，需重新命名本artifactId，以此naming deployment，如山航BI(sdbi)、成都电商平台(cdep)。
-根据构建开发测试等差异环境需要，引入了profile机制，通过mvn install -Pxxx方式启动定制资源。
+新项目根据规范，需重新命名本artifactId，如aggregator_bi，以deploy项目的aggregator artifact到Nexus上。
+根据构建开发测试等差异环境需要，-web-dist工程引入了profile机制，通过mvn install -Pxxx方式启动定制资源。
+
+[1]:http://219.143.215.116:8080/pactera-jeesite
+[2]:http://192.168.5.5:8080/pactera-jeesite
